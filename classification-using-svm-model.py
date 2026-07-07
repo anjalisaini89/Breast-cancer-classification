@@ -3,11 +3,18 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import kagglehub
+import os
 
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVC
 from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
+
+# ==========================================
+# Create Images Folder
+# ==========================================
+
+os.makedirs("images", exist_ok=True)
 
 # ==========================================
 # Download and Load Dataset
@@ -24,6 +31,9 @@ df = pd.read_csv(path + "/data.csv")
 
 print("\nFirst 5 Records")
 print(df.head())
+
+print("\nLast 5 Records")
+print(df.tail())
 
 print("\nDataset Shape")
 print(df.shape)
@@ -47,7 +57,8 @@ print(df.columns)
 # Data Visualization
 # ==========================================
 
-sns.pairplot(
+# Pair Plot
+pair = sns.pairplot(
     df[
         [
             "radius_mean",
@@ -60,11 +71,18 @@ sns.pairplot(
     hue="diagnosis",
 )
 
+pair.savefig("images/pairplot.png", dpi=300, bbox_inches="tight")
 plt.show()
 
-plt.figure(figsize=(5,4))
+# Diagnosis Count
+plt.figure(figsize=(5, 4))
+
 sns.countplot(x="diagnosis", data=df)
+
 plt.title("Diagnosis Count")
+
+plt.savefig("images/diagnosis-count.png", dpi=300, bbox_inches="tight")
+
 plt.show()
 
 # ==========================================
@@ -82,7 +100,10 @@ X_train, X_test, y_train, y_test = train_test_split(
     random_state=42
 )
 
+# ==========================================
 # Feature Scaling
+# ==========================================
+
 scaler = StandardScaler()
 
 X_train = scaler.fit_transform(X_train)
@@ -97,12 +118,12 @@ model = SVC()
 model.fit(X_train, y_train)
 
 # ==========================================
-# Predictions
+# Prediction
 # ==========================================
 
 y_pred = model.predict(X_test)
 
-print("\nPredictions")
+print("\nPredicted Labels")
 print(y_pred)
 
 # ==========================================
@@ -122,10 +143,10 @@ print("\nConfusion Matrix")
 print(cm)
 
 # ==========================================
-# Plot Confusion Matrix
+# Confusion Matrix Visualization
 # ==========================================
 
-plt.figure(figsize=(5,4))
+plt.figure(figsize=(5, 4))
 
 sns.heatmap(
     cm,
@@ -139,5 +160,7 @@ sns.heatmap(
 plt.xlabel("Predicted")
 plt.ylabel("Actual")
 plt.title("Confusion Matrix")
+
+plt.savefig("images/confusion-matrix.png", dpi=300, bbox_inches="tight")
 
 plt.show()
